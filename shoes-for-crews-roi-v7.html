@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shoes for Crews — AI Customer Service ROI Model</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F5F5F3;--surface:#FFFFFF;--surface-2:#EDEDEB;--surface-3:#E2E2DE;
+    --border:rgba(0,0,0,0.07);--ink:#111;--ink-muted:#555;--ink-dim:#999;
+    --ada-pink:#F0A0D0;--ada-yellow:#F0D060;--ada-orange:#D48020;--ada-green:#1A6B4A;
+    --ada-green-light:rgba(26,107,74,0.08);--ada-blue:#4A6CF0;
+    --red:#C43A2A;--red-bg:rgba(196,58,42,0.06);--red-border:rgba(196,58,42,0.12);
+    --green-bg:rgba(26,107,74,0.06);--green-border:rgba(26,107,74,0.15);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;font-size:14px}
+
+  .container{max-width:1100px;margin:0 auto;padding:48px 32px 80px}
+
+  /* Header */
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px}
+  .header .ada-logo{font-size:28px;font-weight:300;letter-spacing:-1px;color:var(--ink)}
+  .header .prepared{font-size:12px;color:var(--ink-dim)}
+  .header .client-badge{font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--ink-muted);background:var(--surface);border:1px solid var(--border);padding:6px 14px;border-radius:6px}
+
+  /* Hero */
+  .hero{margin-bottom:48px}
+  .hero h1{font-size:clamp(32px,4.5vw,48px);font-weight:300;line-height:1.15;letter-spacing:-1px;margin-bottom:12px}
+  .hero h1 strong{font-weight:600}
+  .hero h1 .accent{color:var(--ada-green)}
+  .hero p{color:var(--ink-muted);font-size:15px;max-width:560px;line-height:1.7;font-weight:400}
+
+  /* Tabs */
+  .tabs{display:flex;gap:2px;margin-bottom:0}
+  .tab{padding:11px 22px;font-size:13px;font-weight:500;color:var(--ink-dim);cursor:pointer;border-radius:8px 8px 0 0;transition:all .15s;background:var(--surface-2);border:1px solid transparent;border-bottom:none}
+  .tab:hover{color:var(--ink-muted);background:var(--surface-3)}
+  .tab.active{background:var(--surface);color:var(--ink);border-color:var(--border);border-bottom-color:var(--surface);position:relative;z-index:1}
+  .tab-content{display:none;background:var(--surface);border:1px solid var(--border);border-radius:0 12px 12px 12px;padding:36px;animation:fadeIn .25s ease-out}
+  .tab-content.active{display:block}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+  /* Shared */
+  .section-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-dim);margin-bottom:14px}
+
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:28px}
+  .stat-box{text-align:center;padding:16px 10px;background:var(--bg);border-radius:8px}
+  .stat-box .sv{font-size:24px;font-weight:600;letter-spacing:-0.5px;margin-bottom:2px}
+  .stat-box .sl{font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.5px;font-weight:500;line-height:1.4}
+  .stat-box .ss{font-size:10px;margin-top:3px;font-weight:500}
+  .stat-box .ss.bad{color:var(--red)}
+  .stat-box .ss.warn{color:var(--ada-orange)}
+  .stat-box.hl{background:var(--ada-green);color:#fff}
+  .stat-box.hl .sv{color:#fff}
+  .stat-box.hl .sl{color:rgba(255,255,255,.6)}
+
+  /* Compare */
+  .compare-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+  .cmp{padding:22px;border-radius:10px;font-size:13px}
+  .cmp.old{background:var(--bg);border:1px solid var(--border)}
+  .cmp.new{background:var(--ada-green);color:rgba(255,255,255,.85)}
+  .cmp h4{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+  .cmp.old h4{color:var(--ink-dim)}
+  .cmp.new h4{color:rgba(255,255,255,.5)}
+  .cl{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid rgba(0,0,0,.05)}
+  .cmp.new .cl{border-top-color:rgba(255,255,255,.1)}
+  .cv{font-weight:600;font-variant-numeric:tabular-nums}
+  .cmp.new .cv{color:#fff}
+  .ct{margin-top:14px;padding-top:14px;border-top:2px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+  .cmp.new .ct{border-top-color:rgba(255,255,255,.15);color:#fff}
+  .cmp.new .ct .cv{font-size:18px}
+  .cmp.old .ct .cv{color:var(--red);font-size:18px}
+
+  /* CX Banner */
+  .cx{background:var(--bg);border-left:3px solid var(--ada-pink);border-radius:0 8px 8px 0;padding:18px 22px;margin-top:24px}
+  .cx h4{font-size:13px;font-weight:600;margin-bottom:4px}
+  .cx p{font-size:12px;color:var(--ink-muted);line-height:1.6}
+
+  /* Delay */
+  .delay{background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;padding:24px;text-align:center;margin-top:24px}
+  .delay h3{font-size:16px;font-weight:600;margin-bottom:4px}
+  .delay .dsub{font-size:12px;color:var(--ink-muted);margin-bottom:16px}
+  .drow{display:flex;justify-content:center;gap:48px;flex-wrap:wrap}
+  .drow .dv{font-size:28px;font-weight:700;color:var(--red);letter-spacing:-0.5px}
+  .drow .dl{font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.5px}
+
+  /* Channel cards */
+  .ch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .chc{background:var(--bg);border-radius:10px;padding:20px;border:1px solid var(--border)}
+  .chc .cht{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:10px}
+  .chc.msg .cht{background:rgba(74,108,240,.08);color:var(--ada-blue)}
+  .chc.eml .cht{background:var(--ada-green-light);color:var(--ada-green)}
+  .chc.vox .cht{background:rgba(240,160,208,.12);color:#B06090}
+  .chc .chv{font-size:22px;font-weight:600;letter-spacing:-0.5px}
+  .chc .chvl{font-size:11px;color:var(--ink-dim);margin-bottom:12px}
+  .chd{font-size:12px;color:var(--ink-muted);padding:6px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+  .chd:last-of-type{border-bottom:1px solid var(--border)}
+  .chd .cdv{font-weight:600;color:var(--ink)}
+  .chd .cdv.good{color:var(--ada-green)}
+  .chd .cdv.bad{color:var(--red)}
+  .chi{margin-top:10px;font-size:11px;color:var(--ink-muted);line-height:1.5;padding:8px 10px;background:var(--surface);border-radius:6px}
+  .chi strong{color:var(--ink)}
+
+  /* Funnel */
+  .funnel{background:var(--bg);border-radius:10px;padding:20px;margin-top:20px;border:1px solid var(--border)}
+  .funnel h4{font-size:12px;font-weight:600;margin-bottom:14px}
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .fg-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .fg-label.old{color:var(--red)}
+  .fg-label.new{color:var(--ada-green)}
+  .fr{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .fr-label{font-size:11px;color:var(--ink-dim);min-width:70px;text-align:right}
+  .fr-bar{height:24px;border-radius:5px;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:600;color:#fff;min-width:40px;transition:width .4s ease}
+  .fr-val{font-size:11px;font-weight:600;min-width:60px;margin-left:4px}
+
+  /* Coverage table */
+  .covt{width:100%;border-collapse:collapse;font-size:12px;margin-top:14px}
+  .covt thead{background:var(--bg)}
+  .covt th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-dim);padding:10px 14px;border-bottom:1px solid var(--border)}
+  .covt th.ac{background:var(--ada-green-light);color:var(--ada-green)}
+  .covt td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--ink-muted)}
+  .covt tr:last-child td{border-bottom:none}
+  .covt .cap{color:var(--ink);font-weight:500}
+  .covt .ck{color:var(--ada-green);font-weight:700}
+  .covt .cx2{color:var(--red)}
+  .covt .pt{color:var(--ada-orange)}
+  .covt td.acl{background:rgba(26,107,74,.02)}
+  .vn{font-size:9px;display:block;color:var(--ink-dim);font-style:italic;margin-top:1px}
+
+  /* Inputs */
+  .ig{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+  .igr{display:flex;flex-direction:column;gap:5px}
+  .igr label{font-size:12px;font-weight:500;color:var(--ink-muted)}
+  .igr label .h{font-size:10px;color:var(--ink-dim);font-weight:400}
+  .irow{display:flex;align-items:center;gap:8px}
+  .irow input[type="range"]{flex:1;-webkit-appearance:none;appearance:none;height:2px;background:var(--surface-3);border-radius:2px;outline:none}
+  .irow input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--ink);border-radius:50%;cursor:pointer}
+  .ival{font-size:13px;font-weight:600;min-width:55px;text-align:right;font-variant-numeric:tabular-nums}
+  .inote{font-size:10px;color:var(--ink-dim);font-style:italic}
+
+  .footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:10px;color:var(--ink-dim);line-height:1.8;max-width:660px}
+  .footer h4{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:3px;margin-top:10px;color:var(--ink-muted)}
+
+  @media(max-width:860px){.compare-row,.ch-grid,.fg{grid-template-columns:1fr}.container{padding:28px 16px 60px}.tabs{overflow-x:auto;flex-wrap:nowrap}.tab{white-space:nowrap;font-size:12px;padding:9px 14px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="ada-logo">ada</div>
+    <div class="client-badge">Prepared for Shoes for Crews</div>
+    <div class="prepared">February 2026</div>
+  </div>
+
+  <div class="hero">
+    <h1>one platform. every channel.<br><span class="accent"><strong>real savings.</strong></span></h1>
+    <p>Conservative projections using Automated Resolution — not containment — across messaging, email, and voice.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="summary">Executive Summary</div>
+    <div class="tab" data-tab="channels">Channel Breakdown</div>
+    <div class="tab" data-tab="compare">Why One Platform</div>
+    <div class="tab" data-tab="assumptions">Assumptions</div>
+  </div>
+
+  <!-- TAB 1 -->
+  <div class="tab-content active" id="tab-summary">
+    <div class="section-label">your support operations today</div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="sv">55K</div><div class="sl">Engaged Chat<br>Conversations</div><div class="ss bad">22K abandoned without help</div></div>
+      <div class="stat-box"><div class="sv">252K</div><div class="sl">Email Cases<br>Per Year</div><div class="ss bad">No automation</div></div>
+      <div class="stat-box"><div class="sv">255K</div><div class="sl">Voice Calls<br>Per Year</div><div class="ss warn">45% are order placement</div></div>
+      <div class="stat-box"><div class="sv">37</div><div class="sl">Agents<br>(17 BO + 20 CC)</div></div>
+      <div class="stat-box"><div class="sv">34%</div><div class="sl">Chat AR<br>(Scripted)</div></div>
+      <div class="stat-box"><div class="sv">1 of 3</div><div class="sl">Channels<br>Automated</div></div>
+    </div>
+
+    <div class="section-label">annual cost: current vs. ada</div>
+    <div class="compare-row">
+      <div class="cmp old">
+        <h4>Current State — Scripted + Manual</h4>
+        <div class="cl"><span>Chat: 14K escalated to agents</span><span class="cv" id="s-c-chat">$69,940</span></div>
+        <div class="cl"><span>Email: 252K fully manual</span><span class="cv" id="s-c-email">$1,260,000</span></div>
+        <div class="cl"><span>Voice: 255K fully manual</span><span class="cv" id="s-c-voice">$2,040,000</span></div>
+        <div class="ct"><span>Total Annual Cost</span><span class="cv" id="s-c-total">$3,384,940</span></div>
+      </div>
+      <div class="cmp new">
+        <h4>Ada — Unified AI Agent</h4>
+        <div class="cl"><span>Chat: 67% AR → <span id="s-a-esc">7K</span> escalated</span><span class="cv" id="s-a-chat">$35,530</span></div>
+        <div class="cl"><span>Email: 40% AR → <span id="s-a-ea">151K</span> to agents</span><span class="cv" id="s-a-email">$756,000</span></div>
+        <div class="cl"><span>Voice: 20% AR → <span id="s-a-va">204K</span> to agents</span><span class="cv" id="s-a-voice">$1,632,000</span></div>
+        <div class="ct"><span>Total Annual Cost</span><span class="cv" id="s-a-total">$2,425,530</span></div>
+      </div>
+    </div>
+
+    <div class="stat-row" style="margin-top:24px">
+      <div class="stat-box hl"><div class="sv" id="s-sav">$959K</div><div class="sl">Annual Savings</div></div>
+      <div class="stat-box hl"><div class="sv" id="s-def">159K</div><div class="sl">Tickets Deflected</div></div>
+      <div class="stat-box hl"><div class="sv" id="s-pct">28%</div><div class="sl">Cost Reduction</div></div>
+      <div class="stat-box hl"><div class="sv">3 of 3</div><div class="sl">Channels Automated</div></div>
+    </div>
+
+    <div class="cx">
+      <h4>Beyond cost savings: 22,000 customers who got no help</h4>
+      <p>In 2025, <strong>22,114 chat conversations</strong> (40.5% of engaged sessions) ended without resolution or escalation. These customers asked for help, didn't get it, and left — many likely called your phone line, emailed support, or abandoned their purchase. Generative AI doesn't just save money — it rescues these conversations. That's <strong>revenue protection and customer retention</strong>, not just cost avoidance.</p>
+    </div>
+
+    <div class="delay">
+      <h3>The cost of waiting until June</h3>
+      <div class="dsub">Every month on the current setup is money left on the table.</div>
+      <div class="drow">
+        <div><div class="dv" id="s-mo">$80K</div><div class="dl">Lost savings / month</div></div>
+        <div><div class="dv" id="s-ju">$320K</div><div class="dl">Total if you wait til June</div></div>
+        <div><div class="dv" id="s-ex">13K</div><div class="dl">Extra agent tickets / month</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div class="tab-content" id="tab-channels">
+    <div class="section-label">where the savings come from</div>
+    <p style="font-size:13px;color:var(--ink-muted);margin-bottom:20px">Chat alone isn't the story. Email and voice — your two highest-volume channels with zero automation — account for <strong id="ch-pct">96%</strong> of total savings.</p>
+    <div class="ch-grid">
+      <div class="chc msg">
+        <span class="cht">Messaging</span>
+        <div class="chv">55K</div>
+        <div class="chvl">engaged conversations / year</div>
+        <div class="chd"><span>Resolved (scripted)</span><span class="cdv">18,557 (34%)</span></div>
+        <div class="chd"><span>Escalated to agents</span><span class="cdv">13,988 (25.6%)</span></div>
+        <div class="chd"><span>Abandoned</span><span class="cdv bad">22,114 (40.5%)</span></div>
+        <div class="chd"><span>Projected AR</span><span class="cdv" id="ch-ma">67%</span></div>
+        <div class="chd"><span>New escalations</span><span class="cdv good" id="ch-me">~7K</span></div>
+        <div class="chd"><span>Agent cost savings</span><span class="cdv good" id="ch-ms">$34,410</span></div>
+        <div class="chi"><strong>The real win is CX.</strong> 40% of conversations end in abandonment today. Generative AI converts these dead ends into resolutions and cuts escalation from 26% to ~13%.</div>
+      </div>
+      <div class="chc eml">
+        <span class="cht">Email</span>
+        <div class="chv">252K</div>
+        <div class="chvl">cases / year</div>
+        <div class="chd"><span>Current automation</span><span class="cdv bad">~0%</span></div>
+        <div class="chd"><span>Projected AR</span><span class="cdv" id="ch-ea">40%</span></div>
+        <div class="chd"><span>Tickets deflected</span><span class="cdv good" id="ch-ed">100,800</span></div>
+        <div class="chd"><span>Savings</span><span class="cdv good" id="ch-es">$504,000</span></div>
+        <div class="chi"><strong>Your #1 opportunity.</strong> Primary support channel with zero automation. Same AI brain as messaging — no extra setup. Over half of total savings comes from email alone.</div>
+      </div>
+      <div class="chc vox">
+        <span class="cht">Voice</span>
+        <div class="chv">255K</div>
+        <div class="chvl">calls / year</div>
+        <div class="chd"><span>Current automation</span><span class="cdv bad">~0%</span></div>
+        <div class="chd"><span>Projected AR</span><span class="cdv" id="ch-va">20%</span></div>
+        <div class="chd"><span>Calls deflected</span><span class="cdv good" id="ch-vd">51,000</span></div>
+        <div class="chd"><span>Savings</span><span class="cdv good" id="ch-vs">$408,000</span></div>
+        <div class="chi"><strong>Conservative start, big upside.</strong> 45% of calls are order placements — highly automatable. AI absorbs Monday spikes. 20% AR at launch with room to grow.</div>
+      </div>
+    </div>
+    <div class="funnel">
+      <h4>Chat conversation funnel: current vs. generative</h4>
+      <div class="fg">
+        <div>
+          <div class="fg-label old">Today (Scripted)</div>
+          <div class="fr"><div class="fr-label">Resolved</div><div class="fr-bar" style="width:34%;background:var(--ada-green)">34%</div><div class="fr-val">18,557</div></div>
+          <div class="fr"><div class="fr-label">Escalated</div><div class="fr-bar" style="width:26%;background:var(--ada-orange)">26%</div><div class="fr-val">13,988</div></div>
+          <div class="fr"><div class="fr-label">Abandoned</div><div class="fr-bar" style="width:40%;background:var(--red)">40%</div><div class="fr-val" style="color:var(--red)">22,114</div></div>
+        </div>
+        <div>
+          <div class="fg-label new">Projected (Generative AI)</div>
+          <div class="fr"><div class="fr-label">Resolved</div><div class="fr-bar" id="f-r" style="width:67%;background:var(--ada-green)">67%</div><div class="fr-val" id="f-rv">36,850</div></div>
+          <div class="fr"><div class="fr-label">Escalated</div><div class="fr-bar" id="f-e" style="width:13%;background:var(--ada-orange)">13%</div><div class="fr-val" id="f-ev">~7,100</div></div>
+          <div class="fr"><div class="fr-label">Abandoned</div><div class="fr-bar" id="f-a" style="width:20%;background:var(--surface-3);color:var(--ink-dim)">20%</div><div class="fr-val" id="f-av">~10,700</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3 -->
+  <div class="tab-content" id="tab-compare">
+    <div class="section-label">single platform vs. multi-vendor stack</div>
+    <p style="font-size:13px;color:var(--ink-muted);margin-bottom:14px">Stitching together separate vendors for messaging, email, and voice creates hidden costs — duplicate integrations, split reporting, and compounded maintenance.</p>
+    <table class="covt">
+      <thead><tr><th style="width:26%">Capability</th><th>Current (Scripted)</th><th class="ac">Ada — Unified AI</th><th>Multi-Vendor Stack</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Web Messaging</td><td><span class="ck">✓</span> Scripted only</td><td class="acl"><span class="ck">✓</span> Generative AI</td><td><span class="ck">✓</span> Varies</td></tr>
+        <tr><td class="cap">Email Automation</td><td><span class="cx2">✗</span> Manual</td><td class="acl"><span class="ck">✓</span> Full AI triage + resolution</td><td><span class="pt">~</span> Separate tool<span class="vn">Most digital vendors lack native email AI</span></td></tr>
+        <tr><td class="cap">Voice / IVR</td><td><span class="cx2">✗</span> No automation</td><td class="acl"><span class="ck">✓</span> AI voice agent</td><td><span class="pt">~</span> Separate CCaaS<span class="vn">Second contract, SLA, integration</span></td></tr>
+        <tr><td class="cap">Unified Reporting</td><td><span class="cx2">✗</span></td><td class="acl"><span class="ck">✓</span> Single dashboard</td><td><span class="cx2">✗</span> Split across platforms</td></tr>
+        <tr><td class="cap">Single Knowledge Base</td><td>FAQ / HTML</td><td class="acl"><span class="ck">✓</span> One source → all channels</td><td><span class="cx2">✗</span> Duplicate per vendor</td></tr>
+        <tr><td class="cap">Salesforce Integration</td><td><span class="ck">✓</span></td><td class="acl"><span class="ck">✓</span> Transfers over</td><td><span class="ck">✓</span> Native or connector</td></tr>
+        <tr><td class="cap">Order Tracking (P44)</td><td><span class="ck">✓</span></td><td class="acl"><span class="ck">✓</span> API carries over</td><td><span class="pt">~</span> Rebuild per vendor</td></tr>
+        <tr><td class="cap">Corporate Portals</td><td>Limited</td><td class="acl"><span class="ck">✓</span> Per-brand configs</td><td><span class="pt">~</span> Config per tool</td></tr>
+        <tr><td class="cap">Maintenance</td><td>½ day/week</td><td class="acl">Natural language coaching</td><td>Per-platform admin</td></tr>
+        <tr><td class="cap">Vendor Contracts</td><td>1 (via P44)</td><td class="acl"><strong>1</strong> — Direct</td><td>2–3 separate</td></tr>
+        <tr><td class="cap">Implementation</td><td>n/a</td><td class="acl">Weeks (APIs transfer)</td><td>3–6 months per vendor</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TAB 4 -->
+  <div class="tab-content" id="tab-assumptions">
+    <div class="section-label">adjust your assumptions</div>
+    <p style="font-size:13px;color:var(--ink-muted);margin-bottom:18px">All projections update across every tab in real time. All resolution rates use <strong>Automated Resolution (AR)</strong> — not containment.</p>
+    <div class="ig">
+      <div class="igr"><label>Cost per Digital Contact <span class="h">(chat + email)</span></label><div class="irow"><input type="range" id="cpc" min="2" max="12" step=".5" value="5"><span class="ival" id="cpcV">$5.00</span></div><div class="inote">eCommerce avg: ~$5 USD</div></div>
+      <div class="igr"><label>Cost per Voice Contact <span class="h">(USD)</span></label><div class="irow"><input type="range" id="vcpc" min="4" max="20" step=".5" value="8"><span class="ival" id="vcpcV">$8.00</span></div><div class="inote">Voice typically 1.5–2× digital CPC</div></div>
+      <div class="igr"><label>Messaging AR <span class="h">(generative)</span></label><div class="irow"><input type="range" id="mAR" min="45" max="85" step="1" value="67"><span class="ival" id="mARV">67%</span></div><div class="inote">Validated: 500-conversation sim on SFC KB</div></div>
+      <div class="igr"><label>Email AR <span class="h">(generative)</span></label><div class="irow"><input type="range" id="eAR" min="15" max="60" step="1" value="40"><span class="ival" id="eARV">40%</span></div><div class="inote">Conservative: trails messaging 15–25pp at launch</div></div>
+      <div class="igr"><label>Voice AR <span class="h">(AI voice agent)</span></label><div class="irow"><input type="range" id="vAR" min="5" max="40" step="1" value="20"><span class="ival" id="vARV">20%</span></div><div class="inote">Conservative: voice AI is newest channel</div></div>
+    </div>
+    <div style="background:var(--bg);border-radius:8px;padding:18px;margin-top:8px">
+      <div class="section-label" style="margin-bottom:6px">AR vs. containment</div>
+      <p style="font-size:12px;color:var(--ink-muted);line-height:1.7">All projections use <strong>Automated Resolution (AR)</strong> — not containment. AR requires the AI to genuinely resolve the inquiry (relevant, accurate, safe, and contained). Containment simply measures whether a conversation avoided a handoff. Industry containment benchmarks are typically 15–30pp higher than AR. By using AR, this model reflects real customer outcomes.</p>
+    </div>
+    <div style="margin-top:16px">
+      <div class="section-label">sources</div>
+      <p style="font-size:10px;color:var(--ink-dim);line-height:1.8">
+        <strong>Chat data:</strong> Ada platform, CY 2025 — 103,345 opened, 54,659 engaged, 18,557 resolved (34.0% AR), 13,988 escalated (25.6%), 22,114 abandoned (40.5%).<br>
+        <strong>Messaging AR:</strong> 500-conversation simulation on SFC knowledge base, no optimization (Ada, Sept 2025). Platform avg: ~80% AR.<br>
+        <strong>Email AR:</strong> Set conservatively below messaging. 40% is an unoptimized starting point; typically improves 15–25pp within 90 days.<br>
+        <strong>Voice AR:</strong> Most conservative. 20% targets automatable intents: order placement (45% of calls), shipping status, tracking.<br>
+        <strong>Escalation model:</strong> Current ratio of escalated-to-unresolved (~39%) held constant, applied to smaller unresolved pool at projected AR.
+      </p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>All figures are illustrative and will vary based on implementation scope, configuration, and confirmed cost-per-contact. Projections represent conservative baselines — actual results typically improve with optimization and coaching.</p>
+  </div>
+</div>
+
+<script>
+const C=54659,E=252000,V=255000,CR=18557,CE=13988,CA=22114;
+const AR0=CR/C,ER=CE/(C-CR);
+const $=id=>document.getElementById(id);
+const fm=n=>n.toLocaleString('en-US');
+const fc=n=>'$'+fm(Math.round(n));
+const fs=n=>n>=1e6?'$'+(n/1e6).toFixed(2)+'M':n>=1e3?'$'+Math.round(n/1e3)+'K':'$'+fm(n);
+const el={cpc:$('cpc'),vcpc:$('vcpc'),mAR:$('mAR'),eAR:$('eAR'),vAR:$('vAR')};
+
+function go(){
+  const c=+el.cpc.value,vc=+el.vcpc.value,m=+el.mAR.value/100,e=+el.eAR.value/100,v=+el.vAR.value/100;
+  $('cpcV').textContent='$'+c.toFixed(2);$('vcpcV').textContent='$'+vc.toFixed(2);
+  $('mARV').textContent=Math.round(m*100)+'%';$('eARV').textContent=Math.round(e*100)+'%';$('vARV').textContent=Math.round(v*100)+'%';
+
+  const cCC=CE*c,cEC=E*c,cVC=V*vc,cT=cCC+cEC+cVC;
+  const aU=Math.round(C*(1-m)),aE2=Math.round(aU*ER),aR=C-aU,aAb=aU-aE2,aCC=aE2*c;
+  const aEa=Math.round(E*(1-e)),aEC=aEa*c,eD=E-aEa;
+  const aVa=Math.round(V*(1-v)),aVC=aVa*vc,vD=V-aVa;
+  const aT=aCC+aEC+aVC,sv=cT-aT,cD=CE-aE2,tD=cD+eD+vD;
+
+  $('s-c-chat').textContent=fc(cCC);$('s-c-email').textContent=fc(cEC);$('s-c-voice').textContent=fc(cVC);$('s-c-total').textContent=fc(cT);
+  $('s-a-chat').textContent=fc(aCC);$('s-a-esc').textContent=fm(aE2);$('s-a-email').textContent=fc(aEC);$('s-a-ea').textContent=fm(aEa);
+  $('s-a-voice').textContent=fc(aVC);$('s-a-va').textContent=fm(aVa);$('s-a-total').textContent=fc(aT);
+  $('s-sav').textContent=fs(sv);$('s-def').textContent=(tD/1e3).toFixed(0)+'K';$('s-pct').textContent=Math.round(sv/cT*100)+'%';
+  const mw=Math.round(sv/12);$('s-mo').textContent=fs(mw);$('s-ju').textContent=fs(mw*4);$('s-ex').textContent=(Math.round(tD/12)/1e3).toFixed(0)+'K';
+
+  $('ch-ma').textContent=Math.round(m*100)+'%';$('ch-me').textContent='~'+fm(aE2);$('ch-ms').textContent=fc(cCC-aCC);
+  $('ch-ea').textContent=Math.round(e*100)+'%';$('ch-ed').textContent=fm(eD);$('ch-es').textContent=fc(eD*c);
+  $('ch-va').textContent=Math.round(v*100)+'%';$('ch-vd').textContent=fm(vD);$('ch-vs').textContent=fc(vD*vc);
+  const eSv=eD*c,vSv=vD*vc;$('ch-pct').textContent=sv>0?Math.round((eSv+vSv)/sv*100)+'%':'0%';
+
+  const rP=Math.round(m*100),eP=Math.round(aE2/C*100),aP=100-rP-eP;
+  $('f-r').style.width=rP+'%';$('f-r').textContent=rP+'%';$('f-rv').textContent=fm(aR);
+  $('f-e').style.width=Math.max(eP,4)+'%';$('f-e').textContent=eP+'%';$('f-ev').textContent='~'+fm(aE2);
+  $('f-a').style.width=Math.max(aP,4)+'%';$('f-a').textContent=aP+'%';$('f-av').textContent='~'+fm(aAb);
+
+  document.querySelector('.hero h1 .accent').innerHTML='<strong>'+fs(sv)+' in annual savings.</strong>';
+}
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');$('tab-'+t.dataset.tab).classList.add('active');
+}));
+Object.values(el).forEach(e=>e.addEventListener('input',go));
+go();
+</script>
+</body>
+</html>
